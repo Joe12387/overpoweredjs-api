@@ -17,7 +17,7 @@ Embed the API on any page served via HTTPS:
 
 Get the fingerprint object & send it to the server, then log the results:
 ```js
-opjs().then((fp) => fp.getFingerprint().then((res) => console.log(res)))
+opjs().then((fp) => console.log(fp));
 ```
 
 ### (c) 2024 Joe Rutkowski <Joe+opjs@dreggle.com>
