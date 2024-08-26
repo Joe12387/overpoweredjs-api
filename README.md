@@ -27,6 +27,27 @@ Get the fingerprint object & send it to the server, then log the results:
 opjs().then((fp) => console.log(fp));
 ```
 
+After calling the `opjs` function, you'll get something back like this:
+```json
+{
+  "clusterUUID": "0W-C9Q-WS6-OHK",
+  "hash": "981ea46cc95667439294e31fffd8d7c060a0e9f7f3f553a7c4943fa7541d9747",
+  "botScore": 1
+}
+```
+
+- The `clusterUUID` is the (hopefully) unique ID that is attached to the browser.
+- The `hash` is simply the hash of the JSON object sent to the server. It can (and will) change, but the `clusterUUID` should not.
+- The `botScore` is a score from 1 to 5 with 5 being the highest likelyhood of being a bot.
+
+As of August 2024, the prototype service can track most Chromium-based browsers such as Google Chrome, Microsoft Edge and Opera.
+
+Support for other browsers such as Firefox, Brave and Safari is in development. These browsers may cause collisions (having the same `clusterUUID` as other browser instances). This may or may not change in the future. For the time being, non-Chromium browsers will be rejected by the API. Particularly, Apple devices will be the least unique due to the homogeneity of Apple's software and hardware, as well as Apple's continued efforts to make their software resistant to tracking.
+
+This is intended to be a commercial API for those priced out of similar SaaS fingerprinting solutions, and is intended to be as inexpensive as possible.
+
+You may participate regardless of how much traffic you have or whether or not you're going to sign up for the service when it goes into production.
+
 # Preliminary Terms of Service
 Executing the API will cause hashed information from a user's browser to be stored on our servers, among other information like HTTP headers. The information collected will be used to improve our product.
 
@@ -34,4 +55,5 @@ Using the API on your site or app without user consent may be illegal in certain
 
 Use with caution. I cannot give legal advice and I am not responsible for your actions. Don't do anything stupid, known abuse will be blacklisted without warning.
 
-### (c) 2024 Joe Rutkowski <Joe+opjs@dreggle.com>
+# Copyright
+(c) 2024 Joe Rutkowski (Joe12387) - Joe@dreggle.com - github.com/Joe12387
