@@ -6,8 +6,8 @@ OverpoweredJS is a browser fingerprinting API designed to identify and track bro
 
 ## Browser Compatibility
 
- * Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based options (Google Chrome, Microsoft Edge, Opera) as well as Firefox, Brave, and Safari.
- * Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments (e.g., Safari, Brave) may produce duplicates, which may impact uniqueness scoring.
+ * Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based options (including Google Chrome, Microsoft Edge, and Opera) as well as Firefox, Brave, and Safari.
+ * Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments (including Safari, Firefox, and Brave) may produce collisions (two or more devices with the same `clusterUUID`).
 
 ## Use
 
@@ -23,7 +23,7 @@ opjs().then((fp) => console.log(fp));
 
 ## API Response Structure
 
-When you make a request to the OverpoweredJS API, you’ll receive a JSON response similar to this:
+When you make a request to the OverpoweredJS API, you’ll receive a response similar to this:
 ```json
 {
   "clusterUUID": "AB-CDE-FGH-IJK",
@@ -66,7 +66,7 @@ The `botScore` and `uniquenessScore` parameters help determine the nature of the
 
 - 5 (Probably a bot): High confidence that the user is a bot. Indicators strongly suggest automated behavior.
 - 4 (Maybe a bot): Medium confidence of bot-like behavior; patterns suggest automation, though some indicators could be from a human.
-- 3 (Inconclusive): Ambiguous result; some indicators are bot-like, but the overall profile does not strongly suggest automation. This could be a bot, or an indication that some APIs were unavailable. Refreshing the page may resolve this.
+- 3 (Inconclusive): Ambiguous result; some indicators are bot-like, but the overall profile does not inherintly suggest automation. This could be a bot, or an indication that some APIs were unavailable. Refreshing the page may resolve this.
 - 2 (Maybe a human): Likely human, but a few indicators raise slight uncertainty.
 - 1 (Probably a human): High confidence that the user is a human.
 
