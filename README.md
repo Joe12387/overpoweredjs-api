@@ -8,6 +8,18 @@ OverpoweredJS is a browser fingerprinting API designed to identify and track bro
  * Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based options (Google Chrome, Microsoft Edge, Opera) as well as Firefox, Brave, and Safari.
  * Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments (e.g., Safari, Brave) may produce duplicates, which may impact uniqueness scoring.
 
+## Use
+
+Embed the API on any page served via HTTPS:
+```html
+<script src="https://v0.telemetry.overpoweredjs.com/opjs.min.js"></script>
+```
+
+Get the fingerprint object & send it to the server, then log the results:
+```js
+opjs().then((fp) => console.log(fp));
+```
+
 ## API Response Structure
 
 When you make a request to the OverpoweredJS API, you’ll receive a JSON response similar to this:
@@ -45,7 +57,7 @@ Embed the OverpoweredJS API script on any HTTPS page to start using it:
 ```
 
 Invoke the API by calling:
-```html
+```js
 opjs().then((fp) => console.log(fp));
 ```
 
@@ -55,23 +67,33 @@ The `botScore` and `uniquenessScore` parameters help determine the nature of the
 
 ### botScore
 
-The `botScore` ranges from 1 to 5, indicating the likelihood of the user being a bot. It can be used to set security thresholds based on the risk profile of the application:
+`botScore` ranges from 1 to 5, indicating the likelihood of the user being a bot.
 
-- **Low-Risk Applications**: Block only scores of 5 (likely a bot).
-- **Moderate-Risk Applications**: Block scores of 4 and 5 (leans towards being a bot, but with less certainty).
-- **High-Risk Applications**: Consider blocking scores of 3 or higher (may be a bot, but may also be an unlucky human).
+#### Understanding botScore
 
-As 3 represents a not inherently suspicious discrepency, it may be transient and be corrected by refreshing the page & calling the API again.
+`botScore` can be used to set security thresholds based on the risk profile of the application:
 
-It is strongly discouraged to block scores of 1 or 2, as these are likely human users.
+- 5 (Probably a bot): High confidence that the user is a bot. Indicators strongly suggest automated behavior.
+- 4 (Maybe a bot): Medium confidence of bot-like behavior; patterns suggest automation, though some indicators could be from a human.
+- 3 (Inconclusive): Ambiguous result; some indicators are bot-like, but the overall profile does not strongly suggest automation. This could be a bot, or an indication that some APIs were unavailable. Refreshing the page may resolve this.
+- 2 (Maybe a human): Likely human, but a few indicators raise slight uncertainty.
+- 1 (Probably a human): High confidence that the user is a human.
+
+#### Usage Guidance for botScore
+
+- Low-Risk Applications: Block only scores of 5 (likely a bot).
+- Moderate-Risk Applications: Block scores of 4 and 5, as they suggest bot behavior with medium to high confidence.
+- High-Risk Applications: Consider blocking scores of 3 or higher. Note that a score of 3 indicates a not inherently suspicious discrepancy, which may be transient and correctable by refreshing the page and calling the API again.
+
+Blocking users with a botScore of 1 or 2 is strongly discouraged, as these are likely human users, and such scores generally indicate legitimate activity.
 
 ### uniquenessScore
 
 The uniquenessScore (1 to 5) indicates how unique or trackable a browser fingerprint is, with higher scores reflecting greater distinctiveness. Use this score to set your app’s security level based on how critical it is to differentiate users:
 
- - 5 (Very Unique): Highly distinctive, with minimal overlap with other devices.
- - 4 (Unique): Likely distinct but may share minor similarities with other devices.
- - 3 (Unknown): It's unclear how unique the device is to other devices.
+ - 5 (Unique): Highly distinctive, probably only contains a single device.
+ - 4 (Somewhat Unique): Likely distinct but may share minor similarities with other devices, resulting in multiple devices being grouped with the same clusterUUID.
+ - 3 (Unknown): It's unclear how unique the device's characteristics are to other devices.
  - 2 (Low Uniqueness): Likely similar to many other devices, common configurations.
  - 1 (Not Unique): Shares substantial similarities, matching numerous other devices.
 
