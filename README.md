@@ -1,29 +1,33 @@
-# OverpoweredJS API
+# OverpoweredJS API Documentation
 
 ## Overview
-
-OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. This API aids in distinguishing unique users and detecting potential bots, enhancing security for website operators. The service currently supports a wide range of browsers and is evolving into a commercial API priced at $1 per 1,000 requests, though it remains free to use without signup or API key in its prototype stage.
+OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. It helps website operators distinguish unique users and detect potential bots, enhancing website security. The service currently supports a wide range of browsers and is evolving into a commercial API priced by usage, though it remains free to use without signup or API key in its prototype stage.
 
 ## Browser Compatibility
 
- * Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based options (including Google Chrome, Microsoft Edge, and Opera) as well as Firefox, Brave, and Safari.
- * Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments (including Safari, Firefox, and Brave) may produce collisions (two or more devices with the same `clusterUUID`).
+- Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based browsers (Google Chrome, Microsoft Edge, Opera), as well as Firefox, Brave, and Safari.
+- Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments—particularly Safari, Firefox, and Brave—may produce collisions (instances where two or more devices share the same clusterUUID; view uniqueness for more information).
 
-## Use
+## Getting Started
 
-Embed the API on any page served via HTTPS:
+To start using OverpoweredJS, embed the API script on any page served via HTTPS:
+
 ```html
 <script src="https://v0.telemetry.overpoweredjs.com/opjs.min.js"></script>
 ```
 
-Get the fingerprint object & send it to the server, then log the results:
+Invoke the API by calling:
+
 ```js
 opjs().then((fp) => console.log(fp));
 ```
 
+This function retrieves the fingerprint object, which you can then send to your server or use directly in your client-side code.
+
 ## API Response Structure
 
-When you make a request to the OverpoweredJS API, you’ll receive a response similar to this:
+When you call the OverpoweredJS API, it returns a fingerprint object similar to the following:
+
 ```json
 {
   "clusterUUID": "AB-CDE-FGH-IJK",
@@ -35,68 +39,60 @@ When you make a request to the OverpoweredJS API, you’ll receive a response si
 
 ### Parameters
 
-* `clusterUUID`: A unique identifier for a browser instance, allowing tracking. This value is designed to remain consistent across sessions, helping differentiate users and detect returning browsers.
-* `botScore`: A score from 1 to 5 indicating the likelihood of the user being a bot.
-* `uniquenessScore`: A scale from 1 to 5 representing the fingerprint’s uniqueness.
-* `hash`: A hash of the fingerprint data for reference and troubleshooting.
+- clusterUUID: A unique identifier for a browser instance, designed to remain consistent across sessions. It helps differentiate users and detect returning browsers.
+- botScore: A score from 1 to 5 indicating the likelihood of the user being a bot.
+- uniquenessScore: A score from 1 to 5 representing the fingerprint’s uniqueness.
+- hash: A hash of the fingerprint data, useful for reference and troubleshooting.
 
-## Getting Started
+## Usage Guidance
 
-Embed the OverpoweredJS API script on any HTTPS page to start using it:
-```html
-<script src=“https://v0.telemetry.overpoweredjs.com/opjs.min.js”></script>
-```
-
-Invoke the API by calling:
-```js
-opjs().then((fp) => console.log(fp));
-```
-
-## Use Guidance
-
-The `botScore` and `uniquenessScore` parameters help determine the nature of the user or browser instance for security purposes. Here's how to interpret and use these values effectively:
+The botScore and uniquenessScore parameters help determine the nature of the user or browser instance for security purposes. Here’s how to interpret and use these values effectively:
 
 ### botScore
 
-`botScore` ranges from 1 to 5, indicating the likelihood of the user being a bot.
+The botScore ranges from 1 to 5, indicating the likelihood that the user is a bot.
 
 #### Understanding botScore
 
-`botScore` can be used to set security thresholds based on the risk profile of the application:
-
-- 5 (Probably a bot): High confidence that the user is a bot. Indicators strongly suggest automated behavior.
-- 4 (Maybe a bot): Medium confidence of bot-like behavior; patterns suggest automation, though some indicators could be from a human.
-- 3 (Inconclusive): Ambiguous result; some indicators are bot-like, but the overall profile does not inherintly suggest automation. This could be a bot, or an indication that some APIs were unavailable. Refreshing the page may resolve this.
+- 5 (Probably a bot): High confidence; strongly suggests automation.
+- 4 (Maybe a bot): Medium confidence; environment suggests automation.
+- 3 (Inconclusive): Ambiguous result; does not inherently suggest automation. This could be a bot or might indicate that some APIs were unavailable. Refreshing the page may resolve this.
 - 2 (Maybe a human): Likely human, but a few indicators raise slight uncertainty.
 - 1 (Probably a human): High confidence that the user is a human.
 
-#### Usage Guidance for botScore
+##### Usage Recommendations for botScore
 
-- Low-Risk Applications: Block only scores of 5 (likely a bot).
-- Moderate-Risk Applications: Block scores of 4 and 5, as they suggest bot behavior with medium to high confidence.
-- High-Risk Applications: Consider blocking scores of 3 or higher. Note that a score of 3 indicates a not inherently suspicious discrepancy, which may be transient and correctable by refreshing the page and calling the API again.
+- Low-Risk Applications: Consider blocking users with a botScore of 5 (likely bots).
+- Moderate-Risk Applications: Consider blocking users with a botScore of 4 or 5, as they suggest bot behavior with medium to high confidence.
+- High-Risk Applications: Consider blocking users with a botScore of 3 or higher. Note that a score of 3 indicates ambiguity, which may be resolved by refreshing the page and calling the API again.
 
-Blocking users with a botScore of 1 or 2 is strongly discouraged, as these are likely human users, and such scores generally indicate legitimate activity.
+Blocking users with a botScore of 1 or 2 is strongly discouraged, as these scores generally indicate legitimate human users.
 
 ### uniquenessScore
 
 Note: This metric is still in development and is not final.
 
-The uniquenessScore (1 to 5) indicates how unique or trackable a browser fingerprint is, with higher scores reflecting greater distinctiveness. Use this score to set your app’s security level based on how critical it is to differentiate users:
+The uniquenessScore ranges from 1 to 5, indicating how unique or trackable a browser fingerprint is. Higher scores reflect greater distinctiveness.
 
- - 5 (Unique): Highly distinctive, probably represents a single device. Includes Google Chrome, Microsoft Edge, Opera, and other Chromium browsers that do not employ defenses from browser fingerprinting.
- - 4 (Somewhat Unique): Likely distinct but may share minor similarities with other devices, resulting in multiple devices being grouped with the same clusterUUID. This is also the highest level a non-persistent fingerprint can attain. Includes Safari in regular browsing.
- - 3 (Unknown): It's unclear how unique the device's characteristics are compared to other devices.
- - 2 (Low Uniqueness): Likely similar to many other devices, common configurations.
- - 1 (Not Unique): Shares substantial similarities, matching numerous other devices. Only used to identify Safari in private mode.
+#### Understanding uniquenessScore
+
+- 5 (Unique): Highly distinctive; probably represents a single device. Includes browsers like Google Chrome, Microsoft Edge, Opera, and other Chromium-based browsers that do not employ defenses against browser fingerprinting.
+- 4 (Somewhat Unique): Likely distinct but may share minor similarities with other devices, possibly resulting in multiple devices being grouped under the same clusterUUID. This is the highest level a non-persistent fingerprint can attain. Includes Safari in regular browsing mode.
+- 3 (Unknown): Unclear how unique the device’s characteristics are compared to others.
+- 2 (Low Uniqueness): Likely similar to many other devices; common configurations.
+- 1 (Not Unique): Shares substantial similarities with numerous other devices. Only used to identify Safari in private mode.
+
+##### Usage Recommendations for uniquenessScore
+
+Use the uniquenessScore to adjust your application’s security measures based on how critical it is to differentiate users. Higher scores suggest that the fingerprint is more unique and reliable for tracking purposes.
 
 ## Terms of Use and Legal Considerations
 
-This API should be used responsibly for security purposes. Use may be subject to privacy regulations, so explicit user consent is recommended for broader applications. Misuse or abuse may lead to blacklisting.
+This API should be used responsibly for security purposes. Usage may be subject to privacy regulations such as GDPR or CCPA, so explicit user consent is recommended for broader applications. Misuse or abuse of the API may lead to blacklisting.
 
-For more details or to report issues, please reach out via email or on GitHub.
+## Contact
 
-## Contact:
+For more details or to report issues, please reach out via email or GitHub:
 
  * Email: Joe@dreggle.com
  * GitHub: Joe12387
