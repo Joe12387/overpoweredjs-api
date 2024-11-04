@@ -1,5 +1,8 @@
 # OverpoweredJS API Documentation
 
+## November Update
+Our infrastructure is fully scaled, and we’re currently focused on developing the control panel and website for our product. We’ve chosen DigitalOcean’s App Platform, which enables instant scaling based on demand. At present, our service operates on a blend of non-autoscaled shared and dedicated resources, as we have no paying customers. However, if you’re interested in accessing this service on dedicated, redundant, and autoscaled hardware for enhanced performance, please reach out: Joe@dreggle.com
+
 ## Overview
 OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. It helps website operators distinguish unique users and detect potential bots, enhancing website security. The service currently supports a wide range of browsers and is evolving into a commercial API priced by usage, though it remains free to use without signup or API key in its prototype stage.
 
