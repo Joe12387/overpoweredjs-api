@@ -53,7 +53,7 @@ When you call the OverpoweredJS API, it returns a fingerprint object similar to 
 
 ## Verification
 
-Requests from the client containing only `clusterUUID` or `botScore` can be forged, so an `authToken` is provided for verification. The `authToken` is valid for five minutes after the opjs function resolves.
+Requests from the client containing only `clusterUUID` or `botScore` can be forged, so an `authToken` is provided for verification. The `authToken` is valid for five minutes after the `opjs` function resolves.
 
 To verify the `authToken`, use a simple GET request:
 
