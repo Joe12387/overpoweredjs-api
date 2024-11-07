@@ -63,16 +63,7 @@ For example, if your token is `117756340268441600`, send a GET request to:
 
 `https://verification.overpoweredjs.com/verify/117756340268441600`
 
-If the token is valid and has not expired, the server will respond with HTTP status code 200 and return the original object, excluding the `authToken`.
-
-```json
-{
-  "clusterUUID": "AB-CDE-FGH-IJK",
-  "botScore": 1,
-  "uniquenessScore": 5,
-  "hash": "484f9fd6ac89ab21042fd7540bbbe95e6453433ae0111b945d86b6d0ed98e616",
-}
-```
+If the token is valid and has not expired, the server will respond with HTTP status code 200 and return the original object, excluding the `authToken`. Otherwise, a 404 Not Found will be sent.
 
 ## Usage Guidance
 
