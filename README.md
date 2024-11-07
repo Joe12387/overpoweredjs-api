@@ -38,7 +38,8 @@ When you call the OverpoweredJS API, it returns a fingerprint object similar to 
   "clusterUUID": "AB-CDE-FGH-IJK",
   "botScore": 1,
   "uniquenessScore": 5,
-  "hash": "484f9fd6ac89ab21042fd7540bbbe95e6453433ae0111b945d86b6d0ed98e616"
+  "hash": "484f9fd6ac89ab21042fd7540bbbe95e6453433ae0111b945d86b6d0ed98e616",
+  "authToken": "117756340268441600"
 }
 ```
 
@@ -48,6 +49,30 @@ When you call the OverpoweredJS API, it returns a fingerprint object similar to 
 - botScore: A score from 1 to 5 indicating the likelihood of the user being a bot.
 - uniquenessScore: A score from 1 to 5 representing the fingerprint’s uniqueness.
 - hash: A hash of the fingerprint data, useful for reference and troubleshooting.
+- authToken: A token that can be sent to our servers to verify that the request is genuine and not forged by other means. See verification.
+
+## Verification
+
+Requests from the client containing only `clusterUUID` or `botScore` can be forged, so an `authToken` is provided for verification. The `authToken` is valid for five minutes after the opjs function resolves.
+
+To verify the `authToken`, use a simple GET request:
+
+`https://verification.overpoweredjs.com/verify/yourAuthTokenHere`
+
+For example, if your token is `117756340268441600`, send a GET request to:
+
+`https://verification.overpoweredjs.com/verify/117756340268441600`
+
+If the token is valid and has not expired, the server will respond with HTTP status code 200 and return the original object, excluding the `authToken`.
+
+```json
+{
+  "clusterUUID": "AB-CDE-FGH-IJK",
+  "botScore": 1,
+  "uniquenessScore": 5,
+  "hash": "484f9fd6ac89ab21042fd7540bbbe95e6453433ae0111b945d86b6d0ed98e616",
+}
+```
 
 ## Usage Guidance
 
