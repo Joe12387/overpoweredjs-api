@@ -6,6 +6,8 @@ Our infrastructure is fully scaled, and we’re currently focused on developing 
 ## Overview
 OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. It helps website operators distinguish unique users and detect potential bots, enhancing website security. The service currently supports a wide range of browsers and is evolving into a commercial API priced by usage, though it remains free to use without signup or API key in its prototype stage.
 
+[View Demo](https://overpoweredjs.com/demo.html)
+
 ## Browser Compatibility
 
 - Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based browsers (Google Chrome, Microsoft Edge, Opera), as well as Firefox, Brave, and Safari.
