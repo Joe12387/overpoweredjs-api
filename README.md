@@ -117,6 +117,22 @@ If the token is valid and has not expired, the server will respond with HTTP sta
 
 This API should be used responsibly for security purposes. Usage may be subject to privacy regulations such as GDPR or CCPA, so explicit user consent is recommended for broader applications. Misuse or abuse of the API may lead to blacklisting.
 
+## FAQ
+
+### Can I track people cross-site?
+**No**. While it is possible to track browsers/people cross-site, it is exceptionally resource intensive to do so due to the number of records that must be checked. Dividing identifiers by origin allows us to adequately scale the service while also providing a level of privacy to site visitors.
+
+### I need cross-site tracking, will you do it?
+We are able to provide cross-site tracking services to those who wish to use our service using Dedicated Infrastructure, however this is significantly more expensive both computationally and economically.
+
+Contact Joe@dreggle.com and state your reason for needing cross-site tracking. You must be able to adequately describe how you will stay in compliance with all applicable privacy laws and privacy regulations, as well as sign a document stating that you are solely responsible for your actions using our service. If we detect unlawful activity, we will be obligated to sever all ties with you, as well as report the violation(s) to all applicable regulatory or law enforcement bodies.
+
+### What is Dedicated Infrastructure?
+Not to be confused with DigitalOcean's shared and dedicated resources, our Dedicated Infrastructure allows us to cater to high traffic sites that require scaling, redundancy, and performance. A fully redundant setup would be in the thousands of dollars per month depending on traffic. For more, contact Joe@dreggle.com.
+
+### Can I license the code and run it myself?
+**No**, we are unable to license the source code due to legal reasons.
+
 ## Contact
 
 For more details or to report issues, please reach out via email or GitHub:
