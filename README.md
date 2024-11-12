@@ -59,7 +59,7 @@ Returned parameters help determine the nature of the user or browser instance fo
 
 ### `clusterUUID`
 
-`clusterUUID` identifies the browser or device. It is designed to be as unique as possible, assigning each identifier to the fewest possible users per browser or device on which the API is called. Each `clusterUUID` is accompanied by a `uniquenessScore`. The `uniquenessScore` describes how unique the `clusterUUID` likely is. `clusterUUID` only takes client-side browser information into account and is not affected by network changes.
+`clusterUUID` identifies the browser or device. It is designed to be as unique as possible, assigning each identifier to the fewest possible users. Each `clusterUUID` is accompanied by a `uniquenessScore`. The `uniquenessScore` describes how unique the `clusterUUID` is, with 5 indicating it's likely totally unique to this specific browser or device, and lower scores indicating the possibility that more than one individual device may have been assigned with the same `clusterUUID`. `clusterUUID` only takes client-side browser information into account and is not affected by network changes.
 
 ### `uniquenessScore`
 
