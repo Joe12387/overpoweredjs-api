@@ -1,39 +1,105 @@
 # OverpoweredJS API Documentation
 
-## November Update
-Our infrastructure is fully scaled, and we’re currently focused on developing the control panel and website for our product. We’ve chosen DigitalOcean’s App Platform, which enables instant scaling based on demand. At present, our service operates on a blend of non-autoscaled shared and dedicated resources, as we have no paying customers. However, if you’re interested in accessing this service on dedicated, redundant, and autoscaled hardware for enhanced performance, please reach out: Joe@dreggle.com
+## Introduction
 
-## Overview
-OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. It helps website operators distinguish unique users and detect potential bots, enhancing website security. The service currently supports a wide range of browsers and is evolving into a commercial API priced by usage, though it remains free to use without signup or API key in its prototype stage.
+OverpoweredJS is a browser fingerprinting API designed to identify and track browser instances. It helps website operators distinguish unique users and detect potential bots, enhancing website security. The service currently supports a wide range of browsers and is evolving into a commercial API priced by usage. Currently, it remains free to use without signup or API key in its prototype stage.
 
 [View Demo](https://overpoweredjs.com/demo.html)
 
-## Browser Compatibility
-
-- Supported Browsers: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based browsers (Google Chrome, Microsoft Edge, Opera), as well as Firefox, Brave, and Safari.
-- Browser Consistency: While most browsers can generate unique clusterUUID identifiers, some configurations or environments—particularly Safari, Firefox, and Brave—may produce collisions (instances where two or more devices share the same clusterUUID; view uniqueness for more information).
-
 ## Getting Started
 
-To start using OverpoweredJS, embed the API script on any page served via HTTPS:
+### Requirements
+
+- **HTTPS**: OverpoweredJS requires that your web page is served over HTTPS.
+- **Supported Browsers**: As of October 2024, OverpoweredJS supports all modern browsers, including Chromium-based browsers (Google Chrome, Microsoft Edge, Opera), as well as Firefox, Brave, and Safari.
+
+### Installation
+
+Include the OverpoweredJS script in your HTML page:
 
 ```html
 <script src="https://v0.telemetry.overpoweredjs.com/opjs.min.js"></script>
 ```
 
+### Basic Usage
+
 Invoke the API by calling:
 
-```js
-opjs().then((fp) => console.log(fp));
+```javascript
+opjs().then((fp) => {
+  console.log(fp);
+});
 ```
 
 This function retrieves the fingerprint object, which you can then send to your server or use directly in your client-side code.
 
-Note: Running `opjs()` on page load degrades bot detection results. If you rely on effective bot detection, it is advised to load the script on page load and execute `opjs()` only after the user has completed an action such as clicking a button.
+**Note**: Running `opjs()` on page load can degrade bot detection results. For effective bot detection, it is advised to load the script on page load and execute `opjs()` only after the user has completed an action, such as clicking a button.
 
-## API Response Structure
+## Quick Start Example
 
-When you call the OverpoweredJS API, it returns a fingerprint object similar to the following:
+Here is a minimal example of integrating OverpoweredJS into your web page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OverpoweredJS Integration Example</title>
+  <script src="https://v0.telemetry.overpoweredjs.com/opjs.min.js"></script>
+</head>
+<body>
+  <button id="detectBot">Check Bot Status</button>
+
+  <script>
+    document.getElementById('detectBot').addEventListener('click', function() {
+      opjs().then((fp) => {
+        console.log('Fingerprint:', fp);
+        // Send fingerprint data to your server
+        fetch('/your-endpoint', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fp),
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server Response:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+## API Reference
+
+### `opjs()` Function
+
+The `opjs()` function collects the browser fingerprint and returns a Promise that resolves to the fingerprint object.
+
+#### Syntax
+
+```javascript
+opjs().then((fingerprint) => {
+  // Handle the fingerprint object
+});
+```
+
+#### Parameters
+
+The `opjs()` function does not take any parameters.
+
+#### Returns
+
+A Promise that resolves to a fingerprint object.
+
+### Fingerprint Object Structure
+
+When you call the OverpoweredJS API, it returns a fingerprint object with the following structure:
 
 ```json
 {
@@ -45,100 +111,215 @@ When you call the OverpoweredJS API, it returns a fingerprint object similar to 
 }
 ```
 
-### Parameters
+#### Properties
 
-- `clusterUUID`: A unique identifier for a browser instance, designed to remain consistent across sessions. It helps differentiate users and detect returning browsers.
-- `botScore`: A score from 1 to 5 indicating the likelihood of the user being a bot.
-- `uniquenessScore`: A score from 1 to 5 representing the fingerprint’s uniqueness.
-- `hash`: A hash of the fingerprint data, useful for reference and troubleshooting.
-- `authToken`: A token that can be sent to our servers to verify that the request is genuine and not forged by other means. See verification.
+- **`clusterUUID`** (`string`): A unique identifier for a browser instance, designed to remain consistent across sessions. It helps differentiate users and detect returning browsers.
 
-## Usage Guidance
+- **`botScore`** (`number`): A score from 1 to 5 indicating the likelihood of the user being a bot.
 
-Returned parameters help determine the nature of the user or browser instance for security purposes. Here’s how to interpret and use these values effectively:
+- **`uniquenessScore`** (`number`): A score from 1 to 5 representing the fingerprint's uniqueness.
 
-### `clusterUUID`
+- **`hash`** (`string`): A hash of the fingerprint data, useful for reference and troubleshooting.
 
-`clusterUUID` identifies the browser or device. It is designed to be as unique as possible, assigning each identifier to the fewest possible users. Each `clusterUUID` is accompanied by a `uniquenessScore`. The `uniquenessScore` describes how unique the `clusterUUID` is, with 5 indicating it's likely totally unique to this specific browser or device, and lower scores indicating the possibility that more than one individual device may have been assigned with the same `clusterUUID`. `clusterUUID` only takes client-side browser information into account and is not affected by network changes.
+- **`authToken`** (`string`): A token that can be sent to our servers to verify that the request is genuine and not forged by other means. See [Authentication and Verification](#authentication-and-verification).
 
-### `uniquenessScore`
+## Authentication and Verification
 
-Note: This metric is still in development and is not final.
+While the `opjs()` function runs client-side, you may want to verify the authenticity of the data on your server to ensure it hasn't been tampered with.
 
-The uniquenessScore ranges from 1 to 5, indicating how unique or trackable a `clusterUUID` is. Higher scores reflect greater distinctiveness.
+### Verification Endpoint
 
-#### Understanding `uniquenessScore`
+The `authToken` provided in the fingerprint object can be used to verify the data with OverpoweredJS servers.
 
-- 5 (Unique): Highly distinctive; probably represents a single device. Includes browsers like Google Chrome, Microsoft Edge, Opera, and other Chromium-based browsers that do not employ defenses against browser fingerprinting.
-- 4 (Somewhat Unique): Likely distinct but may share minor similarities with other devices, possibly resulting in multiple devices being grouped under the same `clusterUUID`.
-- 3 (Unknown): Unclear how unique the device’s characteristics are compared to others.
-- 2 (Low Uniqueness): Likely similar to many other devices; common configurations.
-- 1 (Not Unique): Shares substantial similarities with numerous other devices.
+#### Request
 
-##### Usage Recommendations for `uniquenessScore`
+To verify the `authToken`, make a GET request to the following endpoint:
 
-Use the `uniquenessScore` to adjust your application’s security measures based on how critical it is to differentiate users. Higher scores suggest that the fingerprint is more unique and reliable for tracking purposes.
+```
+GET https://verification.overpoweredjs.com/verify/{authToken}
+```
 
-### `botScore`
+Replace `{authToken}` with the actual token.
 
-The `botScore` ranges from 1 to 5, indicating the likelihood that the user is a bot.
+**Example:**
 
-#### Understanding botScore
+```
+GET https://verification.overpoweredjs.com/verify/117756340268441600
+```
 
-- 5 (Probably a bot): High confidence; strongly suggests automation.
-- 4 (Maybe a bot): Medium confidence; environment suggests automation.
-- 3 (Inconclusive): Ambiguous result; does not inherently suggest automation. This could be a bot or might indicate that some APIs were unavailable. Refreshing the page may resolve this.
-- 2 (Maybe a human): Likely human, but a few indicators raise slight uncertainty.
-- 1 (Probably a human): High confidence that the user is a human.
+#### Response
 
-##### Usage Recommendations for `botScore`
+If the token is valid and has not expired (tokens are valid for five minutes after the `opjs()` function resolves), the server responds with HTTP status code `200 OK` and returns the original fingerprint object, excluding the `authToken`.
 
-- Low-Risk Applications: Consider blocking users with a `botScore` of 5 (likely bots).
-- Moderate-Risk Applications: Consider blocking users with a `botScore` of 4 or 5, as they suggest bot behavior with medium to high confidence.
-- High-Risk Applications: Consider blocking users with a `botScore` of 3 or higher. Note that a score of 3 indicates ambiguity, which may be resolved by refreshing the page and calling the API again.
+**Example Response:**
 
-Blocking users with a botScore of 1 or 2 is strongly discouraged, as these scores generally indicate legitimate human users.
+```json
+{
+  "clusterUUID": "AB-CDE-FGH-IJK",
+  "botScore": 1,
+  "uniquenessScore": 5,
+  "hash": "484f9fd6ac89ab21042fd7540bbbe95e6453433ae0111b945d86b6d0ed98e616"
+}
+```
 
-## Verification
+If the token is invalid or has expired, the server responds with HTTP status code `404 Not Found`.
 
-Requests from the client containing only `clusterUUID` or `botScore` can be forged, so an `authToken` is provided for verification. The `authToken` is valid for five minutes after the `opjs` function resolves.
+### Server-Side Verification Example
 
-To verify the `authToken`, use a simple GET request:
+Here's how you might verify the `authToken` on your server using Node.js and the `fetch` API:
 
-`https://verification.overpoweredjs.com/verify/yourAuthTokenHere`
+```javascript
+const authToken = '117756340268441600';
 
-For example, if your token is `117756340268441600`, send a GET request to:
+fetch(`https://verification.overpoweredjs.com/verify/${authToken}`)
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error('Invalid or expired authToken');
+    }
+  })
+  .then(fingerprint => {
+    console.log('Verified Fingerprint:', fingerprint);
+    // Proceed with processing the fingerprint data
+  })
+  .catch(error => {
+    console.error('Verification Error:', error);
+  });
+```
 
-`https://verification.overpoweredjs.com/verify/117756340268441600`
+## Error Handling
 
-If the token is valid and has not expired, the server will respond with HTTP status code 200 and return the original object, excluding the `authToken`. Otherwise, a 404 Not Found will be sent.
+### Client-Side Errors
+
+Errors encountered when calling `opjs()` can be handled using the `catch` method of the Promise.
+
+```javascript
+opjs()
+  .then((fp) => {
+    // Handle fingerprint
+  })
+  .catch((error) => {
+    console.error('opjs Error:', error);
+  });
+```
+
+### Verification Errors
+
+When verifying the `authToken`, you may encounter HTTP errors:
+
+- **`404 Not Found`**: The `authToken` is invalid or has expired.
+- **`500 Internal Server Error`**: An unexpected server error occurred.
+
+## Rate Limiting
+
+Currently, there is no explicit rate limiting enforced during the prototype stage. However, excessive or abusive use of the API may result in temporary or permanent blocking.
+
+**Note**: As the service evolves into a commercial API, usage limits and rate limiting policies may be introduced.
+
+## Usage Guidance and Best Practices
+
+### Interpreting `clusterUUID`
+
+- **Purpose**: Identifies the browser or device, designed to remain consistent across sessions.
+- **Uniqueness**: Each `clusterUUID` is accompanied by a `uniquenessScore` to indicate how unique it is.
+
+### Interpreting `uniquenessScore`
+
+- **Range**: 1 to 5
+- **Description**:
+  - **5 (Unique)**: Highly distinctive; likely represents a single device.
+  - **4 (Somewhat Unique)**: Likely distinct but may share minor similarities with other devices.
+  - **3 (Unknown)**: Ambiguous uniqueness; unclear distinctiveness.
+  - **2 (Low Uniqueness)**: Likely similar to many other devices.
+  - **1 (Not Unique)**: Shares substantial similarities with numerous other devices.
+
+**Usage Recommendations**:
+
+- Use the `uniquenessScore` to adjust your application's security measures based on how critical it is to differentiate users.
+- Higher scores suggest that the fingerprint is more unique and reliable for tracking purposes.
+
+### Interpreting `botScore`
+
+- **Range**: 1 to 5
+- **Description**:
+  - **5 (Probably a bot)**: High confidence; strongly suggests automation.
+  - **4 (Maybe a bot)**: Medium confidence; environment suggests automation.
+  - **3 (Inconclusive)**: Ambiguous result; does not inherently suggest automation.
+  - **2 (Maybe a human)**: Likely human, but slight uncertainty.
+  - **1 (Probably a human)**: High confidence that the user is a human.
+
+**Usage Recommendations**:
+
+- **Low-Risk Applications**: Consider blocking users with a `botScore` of **5**.
+- **Moderate-Risk Applications**: Consider blocking users with a `botScore` of **4** or **5**.
+- **High-Risk Applications**: Consider blocking users with a `botScore` of **3** or higher. Note that a score of 3 is ambiguous and may be resolved by refreshing the page and calling the API again.
+
+**Important**: Blocking users with a `botScore` of **1** or **2** is strongly discouraged, as these scores generally indicate legitimate human users.
+
+### Best Practices
+
+- **Delayed Execution**: Execute `opjs()` after user interaction (e.g., button click) for better bot detection results.
+- **Data Privacy**: Ensure compliance with applicable privacy laws when collecting and storing fingerprint data.
+- **Server-Side Verification**: Use the `authToken` to verify data with OverpoweredJS servers to prevent forgery.
+
+## Browser Compatibility
+
+- **Supported Browsers**: All modern browsers, including Chromium-based browsers (Google Chrome, Microsoft Edge, Opera), Firefox, Brave, and Safari.
+- **Browser Consistency**: While most browsers generate unique `clusterUUID` identifiers, some configurations—particularly in Safari, Firefox, and Brave—may produce collisions where multiple devices share the same `clusterUUID`.
+
+## Security Considerations
+
+- **Data Security**: Treat fingerprint data as sensitive information. Securely transmit and store it to prevent unauthorized access.
+- **User Consent**: Depending on your region and application, you may need to obtain explicit user consent before collecting fingerprint data.
+- **Compliance**: Ensure that your use of OverpoweredJS complies with all applicable laws and regulations, such as GDPR and CCPA.
 
 ## Terms of Use and Legal Considerations
 
 This API should be used responsibly for security purposes. Usage may be subject to privacy regulations such as GDPR or CCPA, so explicit user consent is recommended for broader applications. Misuse or abuse of the API may lead to blacklisting.
 
+- **Prohibited Uses**: Do not use OverpoweredJS for unlawful activities or in violation of any privacy laws.
+- **Liability**: The user is solely responsible for compliance with all applicable laws and regulations.
+- **Monitoring**: OverpoweredJS reserves the right to monitor usage and take appropriate action against misuse.
+
 ## FAQ
 
-### Can I track people cross-site?
-**No**. While it is possible to track browsers/people cross-site, it is exceptionally resource intensive to do so due to the number of records that must be checked. Dividing identifiers by origin allows us to adequately scale the service while also providing a level of privacy to site visitors.
+### Can I track people across different websites?
 
-### I need cross-site tracking, will you do it?
-We are able to provide cross-site tracking services to those who wish to use our service using Dedicated Infrastructure, however this is significantly more expensive both computationally and economically.
+**No**. OverpoweredJS is designed to assign identifiers based on the origin (domain) to provide privacy to site visitors and to ensure scalability. Cross-site tracking is not supported in the standard service.
 
-Contact Joe@dreggle.com and state your reason for needing cross-site tracking. You must be able to adequately describe how you will stay in compliance with all applicable privacy laws and privacy regulations, as well as sign a document stating that you are solely responsible for your actions using our service. If we detect unlawful activity, we will be obligated to sever all ties with you, as well as report the violation(s) to all applicable regulatory or law enforcement bodies.
+### I need cross-site tracking. Can you provide it?
+
+We can provide cross-site tracking services using dedicated infrastructure. This service is significantly more resource-intensive and expensive.
+
+**Contact**: If you require cross-site tracking, email Joe@dreggle.com with a detailed explanation of your needs and how you will comply with all applicable privacy laws. You will need to sign an agreement accepting sole responsibility for your use of the service. Unlawful activity will result in service termination and potential reporting to regulatory bodies.
 
 ### What is Dedicated Infrastructure?
-Not to be confused with DigitalOcean's shared and dedicated resources, our Dedicated Infrastructure allows us to cater to high traffic sites that require scaling, redundancy, and performance. A fully redundant setup would be in the thousands of dollars per month depending on traffic. For more, contact Joe@dreggle.com.
+
+Our Dedicated Infrastructure allows us to cater to high-traffic sites that require scaling, redundancy, and performance. It involves a custom setup tailored to your needs and may cost thousands of dollars per month, depending on traffic.
+
+**Contact**: For more information, email Joe@dreggle.com.
 
 ### Can I license the code and run it myself?
-**No**, we are unable to license the source code due to legal reasons.
 
-## Contact
+If you are a large company that requires consulting regarding user tracking, bot detection, or similar fields of study, please contact me for more information.
 
-For more details or to report issues, please reach out via email or GitHub:
+## Support and Contact Information
 
- * Email: Joe@dreggle.com
- * GitHub: Joe12387
+For more details, support, or to report issues, please reach out via email or GitHub:
+
+- **Email**: Joe@dreggle.com
+- **GitHub**: [Joe12387](https://github.com/Joe12387)
+
+## Changelog
+
+### November Update (2024)
+
+- Our infrastructure is fully scaled.
+- Developing the control panel and website.
+- Transitioned to DigitalOcean’s App Platform for instant scaling.
+- Service operates on a blend of non-autoscaled shared and dedicated resources.
 
 ## License
+
 © 2024 Joe Rutkowski (Joe12387)
