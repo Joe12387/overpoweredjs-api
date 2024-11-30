@@ -288,6 +288,9 @@ This API should be used responsibly for security purposes. Usage may be subject 
 
 **No**. OverpoweredJS is designed to assign identifiers based on the origin (domain) to provide privacy to site visitors and to ensure scalability. Cross-site tracking is not supported in the standard service.
 
+### Can I use this as a sole authentication method, with no other credentials?
+While technically possible, it is **strongly discouraged** to rely solely on the `clusterUUID` or `hash` for user authentication, even if the `uniquenessScore` is 5. Neither the `clusterUUID` nor the `hash` should be considered a secure or reliable authentication method without being paired with another mechanism, such as a traditional password.
+
 ### I need cross-site tracking. Can you provide it?
 
 We can provide cross-site tracking services using dedicated infrastructure. This service is significantly more resource-intensive and expensive.
